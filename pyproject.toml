@@ -4,12 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "groundseal"
-version = "0.1.0"
+version = "0.2.0"
 description = "Controlled command-execution boundary for agent workflows"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "pydantic>=2.0,<3",
+    "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]

@@ -38,8 +38,9 @@ GroundSealSandbox was built as a standalone subsystem with:
 ## Residual risks
 
 - Subprocess execution uses `shell=True` with cwd constraint only
-- No multi-tenant identity enforcement at boundary (Phase 5 open question)
+- Multi-tenant identity enforced at RunStore boundary (v0.2); not kernel-level
 - Replay sensitive to runtime config changes
+- Network namespace isolation documented as spike only, not production default
 
 ## Recommendations for backfeed
 

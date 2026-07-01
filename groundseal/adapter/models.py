@@ -21,6 +21,7 @@ class IntegrationRequest(BaseModel):
     command: str
     context: dict[str, Any]
     caller_id: str | None = None
+    persist_run: bool = False
 
 
 class IntegrationResponse(BaseModel):

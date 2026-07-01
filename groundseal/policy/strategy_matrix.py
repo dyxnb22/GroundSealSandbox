@@ -4,14 +4,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from groundseal.config import is_local_restricted_enabled
+from groundseal.config import get_policy_profile, is_local_restricted_enabled
 from groundseal.contracts.models import (
+    EnforcementBackend,
     ExecutionContext,
     ExecutionProposal,
     ExecutionRequest,
     FilesystemConstraints,
     NetworkMode,
     NetworkPolicyProfile,
+    PolicyProfile,
     SandboxStrategy,
 )
 
@@ -21,6 +23,8 @@ class StrategySpec:
     strategy: SandboxStrategy
     real_execution: bool
     requires_network: bool
+    enforcement_backend: EnforcementBackend
+    trust_tier: int
     description: str
 
 
@@ -29,12 +33,16 @@ STRATEGY_MATRIX: dict[SandboxStrategy, StrategySpec] = {
         strategy=SandboxStrategy.DRY_RUN,
         real_execution=False,
         requires_network=False,
+        enforcement_backend=EnforcementBackend.NONE,
+        trust_tier=0,
         description="Simulate execution without invoking a shell",
     ),
     SandboxStrategy.LOCAL_RESTRICTED: StrategySpec(
         strategy=SandboxStrategy.LOCAL_RESTRICTED,
         real_execution=True,
         requires_network=False,
+        enforcement_backend=EnforcementBackend.PROCESS_ONLY,
+        trust_tier=1,
         description="Execute in workspace with deny-by-default network",
     ),
 }
@@ -55,12 +63,18 @@ def strategy_requires_network(strategy: SandboxStrategy) -> bool:
     return STRATEGY_MATRIX[strategy].requires_network
 
 
+def get_strategy_spec(strategy: SandboxStrategy) -> StrategySpec:
+    return STRATEGY_MATRIX[strategy]
+
+
 def select_strategy(
     request: ExecutionRequest,
     *,
     normalize_root: str,
+    policy_profile: PolicyProfile | None = None,
 ) -> ExecutionProposal:
     """Choose strategy and assemble a proposal from a normalized request."""
+    profile = policy_profile or get_policy_profile()
     ctx: ExecutionContext = request.context
     requested = ctx.requested_strategy
     available = get_available_strategies()
@@ -68,7 +82,12 @@ def select_strategy(
     if requested == SandboxStrategy.LOCAL_RESTRICTED:
         if SandboxStrategy.LOCAL_RESTRICTED in available:
             selected = SandboxStrategy.LOCAL_RESTRICTED
-            rationale = "Caller requested local_restricted and it is available"
+            spec = STRATEGY_MATRIX[selected]
+            rationale = (
+                "Caller requested local_restricted and it is available; "
+                f"enforcement_backend={spec.enforcement_backend.value}, "
+                f"trust_tier={spec.trust_tier}"
+            )
         else:
             selected = SandboxStrategy.DRY_RUN
             rationale = (
@@ -86,7 +105,7 @@ def select_strategy(
         rationale = "Unknown strategy preference; defaulting to dry_run"
 
     fs = FilesystemConstraints(workspace_root=normalize_root)
-    network = NetworkPolicyProfile(mode=NetworkMode.DENY_ALL)
+    network = NetworkPolicyProfile(mode=profile.default_network_mode)
 
     return ExecutionProposal(
         request=request,

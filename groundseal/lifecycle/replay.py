@@ -7,8 +7,8 @@ from groundseal.contracts.models import ReplayComparison, RunRecord
 from groundseal.lifecycle.store import RunStore
 
 
-def replay_run(run_id: str, store: RunStore) -> ReplayComparison:
-    record = store.get(run_id)
+def replay_run(run_id: str, store: RunStore, *, tenant_id: str) -> ReplayComparison:
+    record = store.get(run_id, tenant_id)
     if record is None:
         return ReplayComparison(
             run_id=run_id,
@@ -19,7 +19,21 @@ def replay_run(run_id: str, store: RunStore) -> ReplayComparison:
             status_match=False,
             exit_code_match=False,
             drift_detected=True,
-            notes="run_id not found in store",
+            notes="run_id not found in store for tenant",
+        )
+
+    ctx_tenant = record.proposal.request.context.tenant_id
+    if ctx_tenant and ctx_tenant != tenant_id:
+        return ReplayComparison(
+            run_id=run_id,
+            original_status=record.result.status.value,
+            replay_status="denied",
+            original_exit_code=record.result.exit_code,
+            replay_exit_code=None,
+            status_match=False,
+            exit_code_match=False,
+            drift_detected=True,
+            notes="tenant mismatch on replay",
         )
 
     req = record.proposal.request

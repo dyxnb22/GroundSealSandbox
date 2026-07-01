@@ -40,9 +40,27 @@ class FailureClass(str, Enum):
     EXECUTION_ERROR = "execution_error"
 
 
+class EnforcementBackend(str, Enum):
+    NONE = "none"
+    PROCESS_ONLY = "process_only"
+    LANDLOCK = "landlock"
+    NETWORK_NS = "network_ns"
+
+
+class PolicyProfile(BaseModel):
+    """Deployment-level policy configuration."""
+
+    schema_version: str = "1"
+    name: str = "default"
+    mandatory_denies: list[str] = Field(default_factory=list)
+    operator_denies: list[str] = Field(default_factory=list)
+    default_network_mode: NetworkMode = NetworkMode.DENY_ALL
+
+
 class ExecutionContext(BaseModel):
     workspace_root: str
     requested_strategy: SandboxStrategy | None = None
+    tenant_id: str | None = None
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -112,6 +130,7 @@ class ExecutionEvidence(BaseModel):
     stdout: str | None = None
     stderr: str | None = None
     run_id: str | None = None
+    enforcement_backend: EnforcementBackend | None = None
 
 
 class ExecutionResult(BaseModel):
@@ -137,8 +156,10 @@ class CapabilityProfile(BaseModel):
 class RunRecord(BaseModel):
     """Durable snapshot of one execution lifecycle."""
 
+    schema_version: str = "1"
     run_id: str
     created_at: str
+    tenant_id: str | None = None
     proposal: ExecutionProposal
     preflight: PreflightReport
     result: ExecutionResult

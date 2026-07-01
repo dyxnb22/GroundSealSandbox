@@ -5,13 +5,10 @@ from __future__ import annotations
 import os
 import re
 
-_PATH_TRAVERSAL = re.compile(r"(^|[/\\])\.\.([/\\]|$)")
+from groundseal.contracts.models import PolicyProfile
+from groundseal.policy.profile import command_matches_denylist as _command_matches_denylist
 
-# Patterns that indicate high-risk commands (v0 denylist)
-_DENYLIST_PATTERNS: list[re.Pattern[str]] = [
-    re.compile(r"rm\s+-rf\s+/"),
-    re.compile(r":\(\)\s*\{"),  # fork bomb signature
-]
+_PATH_TRAVERSAL = re.compile(r"(^|[/\\])\.\.([/\\]|$)")
 
 
 class NormalizationError(ValueError):
@@ -28,5 +25,5 @@ def normalize_workspace_root(raw: str) -> str:
     return resolved
 
 
-def command_matches_denylist(command: str) -> bool:
-    return any(pattern.search(command) for pattern in _DENYLIST_PATTERNS)
+def command_matches_denylist(command: str, profile: PolicyProfile) -> bool:
+    return _command_matches_denylist(command, profile)

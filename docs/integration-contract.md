@@ -30,7 +30,7 @@ GroundSealSandbox should plug into a parent platform as a specialized subsystem 
 | Caller identity (`caller_id`) | **Parent** | Passed in; logged in evidence only in v0 |
 | Workflow orchestration | **Parent** | Parent calls `plan_execution` → `preflight` → `run` |
 | UI and human review presentation | **Parent** | Subsystem provides structured evidence; parent renders |
-| Tenancy / multi-tenant isolation | **Shared (Phase 5)** | Enforcement location TBD; subsystem must not weaken invariants |
+| Tenancy / multi-tenant isolation | **Shared (v0.2)** | `tenant_id` on `ExecutionContext`; `RunStore` scoped by tenant |
 
 ### Integration handshake (v0)
 
@@ -75,14 +75,39 @@ The adapter:
 - Always runs `plan_execution` → `preflight` → `run` (preflight cannot be skipped)
 - Ignores policy override hints in `context.metadata`
 - Returns `IntegrationResponse` with `evidence_summary` for parent UI
+- When `persist_run=true`, requires `context.tenant_id` and a `RunStore` instance
+
+### Tenancy (v0.2)
+
+- Parent provides `context.tenant_id` as the isolation key.
+- `RunStore.save/get/list_ids/replay_run` all require the same `tenant_id`.
+- Cross-tenant reads return `None`; `persist_run` without `tenant_id` returns
+  `policy_denied`.
+- `caller_id` remains audit metadata only; it is not used for isolation.
+
+Example with persistence:
+
+```python
+from groundseal.adapter import execute_workflow
+from groundseal.lifecycle import RunStore
+
+store = RunStore(path=Path("runs.json"))
+response = execute_workflow({
+    "command": "echo hello",
+    "context": {
+        "workspace_root": "/tmp/workspace",
+        "tenant_id": "org-123",
+    },
+    "persist_run": True,
+}, store=store)
+```
 
 Example payloads: `examples/integration_request_valid.json`
 
-Boundary tests: `tests/test_integration_adapter.py`
+Boundary tests: `tests/test_integration_adapter.py`, `tests/test_tenant_boundary.py`
 
 ## Questions To Resolve Later
 
 - which types must stay platform-neutral
-- where tenancy and identity should be enforced
 - what belongs in shared contracts versus subsystem-local models
 - how much evidence should flow back to the caller by default
