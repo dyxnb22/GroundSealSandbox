@@ -1,19 +1,18 @@
-# Contracts (v0)
+# Contracts (v0.2)
 
-Authoritative contract surface for GroundSealSandbox Phase 0–2. All public
-behavior must map to these types and the four API functions defined in
-[glossary.md](glossary.md).
+Authoritative contract surface for GroundSealSandbox. All public behavior must
+map to these types and the four API functions defined in [glossary.md](glossary.md).
 
-## Public API Surface (v0)
+## Public API Surface
 
 ```
-plan_execution(command: str, context: ExecutionContext) -> ExecutionProposal
-preflight(proposal: ExecutionProposal) -> PreflightReport
+plan_execution(command: str, context: ExecutionContext, *, policy_profile=None) -> ExecutionProposal
+preflight(proposal: ExecutionProposal, *, policy_profile=None) -> PreflightReport
 run(proposal: ExecutionProposal) -> ExecutionResult
 describe_capabilities() -> CapabilityProfile
 ```
 
-No other functions are part of the v0 public contract.
+No other functions are part of the public contract except lifecycle and adapter helpers documented in integration-contract.md.
 
 ## Type Definitions
 
@@ -23,7 +22,20 @@ No other functions are part of the v0 public contract.
 |-------|------|----------|-------------|
 | `workspace_root` | string (path) | yes | Root directory for filesystem constraints |
 | `requested_strategy` | SandboxStrategy | no | Caller preference; subsystem may override |
+| `tenant_id` | string | no | Tenant isolation key; required for RunStore persistence |
 | `metadata` | object | no | Opaque caller hints; not trusted for policy |
+
+### PolicyProfile (v0.2)
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `schema_version` | string | yes | Profile schema version |
+| `name` | string | yes | Profile identifier |
+| `mandatory_denies` | list[string] | yes | Regex patterns; built-ins cannot be removed |
+| `operator_denies` | list[string] | no | Deployment-level additional denies |
+| `default_network_mode` | NetworkMode | no | Default network policy for proposals |
+
+Loaded from `config/policies/*.yaml` or passed to `plan_execution`.
 
 ### ExecutionRequest
 

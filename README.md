@@ -117,8 +117,8 @@ run(proposal)  # after preflight pass
 from groundseal.lifecycle import RunStore, run_and_record, replay_run
 
 store = RunStore()
-record = run_and_record(proposal, preflight_report, store)
-comparison = replay_run(record.run_id, store)
+record = run_and_record(proposal, preflight_report, store, tenant_id="tenant-a")
+comparison = replay_run(record.run_id, store, tenant_id="tenant-a")
 ```
 
 ## Relationship To The Parent Platform

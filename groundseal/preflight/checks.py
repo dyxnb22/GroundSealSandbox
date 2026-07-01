@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from groundseal.config import get_policy_profile
 from groundseal.contracts.models import (
     ExecutionProposal,
     NetworkMode,
+    PolicyProfile,
     PreflightCheck,
     PreflightReport,
     PreflightStatus,
@@ -29,8 +31,8 @@ def _check_schema_valid(proposal: ExecutionProposal) -> PreflightCheck:
         )
 
 
-def _check_policy_denied(proposal: ExecutionProposal) -> PreflightCheck:
-    if command_matches_denylist(proposal.request.command):
+def _check_policy_denied(proposal: ExecutionProposal, profile: PolicyProfile) -> PreflightCheck:
+    if command_matches_denylist(proposal.request.command, profile):
         return PreflightCheck(
             name="policy_denied",
             status=PreflightStatus.FAIL,
@@ -70,16 +72,18 @@ def _check_network_policy_consistency(proposal: ExecutionProposal) -> PreflightC
     return PreflightCheck(name="network_policy_consistency", status=PreflightStatus.PASS)
 
 
-CHECK_ORDER = [
-    _check_schema_valid,
-    _check_policy_denied,
-    _check_strategy_mismatch,
-    _check_network_policy_consistency,
-]
-
-
-def run_preflight(proposal: ExecutionProposal) -> PreflightReport:
-    checks = [fn(proposal) for fn in CHECK_ORDER]
+def run_preflight(
+    proposal: ExecutionProposal,
+    *,
+    policy_profile: PolicyProfile | None = None,
+) -> PreflightReport:
+    profile = policy_profile or get_policy_profile()
+    checks = [
+        _check_schema_valid(proposal),
+        _check_policy_denied(proposal, profile),
+        _check_strategy_mismatch(proposal),
+        _check_network_policy_consistency(proposal),
+    ]
     blocking = [
         c.reason or c.name
         for c in checks

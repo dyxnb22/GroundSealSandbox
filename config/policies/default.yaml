@@ -1,0 +1,7 @@
+schema_version: "1"
+name: default
+mandatory_denies:
+  - 'rm\s+-rf\s+/'
+  - ':\(\)\s*\{'
+operator_denies: []
+default_network_mode: deny_all

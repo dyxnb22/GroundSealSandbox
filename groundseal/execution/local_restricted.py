@@ -13,6 +13,7 @@ from groundseal.contracts.models import (
     PreflightStatus,
 )
 from groundseal.evidence.builder import CHECK_NAMES
+from groundseal.policy.capabilities import resolve_enforcement_backend
 from groundseal.preflight.checks import run_preflight
 
 DEFAULT_TIMEOUT_SECONDS = 30
@@ -25,6 +26,7 @@ def _build_executed_evidence(
     stderr: str,
     run_id: str | None = None,
 ) -> ExecutionEvidence:
+    backend = resolve_enforcement_backend(proposal.selected_strategy)
     return ExecutionEvidence(
         strategy_rationale=proposal.strategy_rationale,
         preflight_summary="all blocking checks passed",
@@ -33,6 +35,7 @@ def _build_executed_evidence(
         stdout=stdout,
         stderr=stderr,
         run_id=run_id,
+        enforcement_backend=backend,
     )
 
 

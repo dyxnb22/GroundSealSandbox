@@ -2,21 +2,20 @@
 
 ## Now
 
-- OS-level network policy enforcement spike.
-- Multi-tenant identity at integration boundary (Phase 5 open question).
+- Landlock wiring into `local_restricted` (after network spike evaluation).
 - CI badge in README once main branch runs green.
+- Platform backfeed PR into parent monorepo.
 
 ## Next
 
-- Record migration for RunStore schema changes.
-- Expand denylist with configurable policy profiles.
-- Integration adapter optional `persist_run` flag.
+- Performance benchmarks and timeout tuning for subprocess.
+- Richer reviewer HTML views.
+- argv-based subprocess (replace `shell=True`).
 
 ## Later
 
-- Performance benchmarks and timeout tuning for subprocess.
-- Richer reviewer HTML views.
-- Platform backfeed PR into parent monorepo.
+- Database-backed RunStore.
+- Partial replay (preflight-only).
 
 ## Sequencing Rules
 
@@ -25,6 +24,13 @@
 - Keep tasks small enough for one focused agent round to complete well.
 
 ## Completed
+
+### v0.2 follow-up slices
+- `PolicyProfile` + configurable denylist (`config/policies/`, `groundseal/policy/profile.py`)
+- OS enforcement backend + trust tiers (`docs/os-enforcement-strategy.md`)
+- `RunRecord.schema_version` + migrations + `scripts/migrate_runstore.py`
+- Multi-tenant `tenant_id` on context, RunStore scoping, adapter `persist_run`
+- Network isolation spike (`docs/experiments/network-isolation-spike.md`)
 
 ### Phase 0–5
 See git history / prior TASKS sections.
