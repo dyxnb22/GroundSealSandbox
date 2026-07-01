@@ -1,0 +1,7 @@
+{
+  "command": "echo hello",
+  "context": {
+    "workspace_root": "/tmp/../etc",
+    "requested_strategy": "dry_run"
+  }
+}

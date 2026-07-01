@@ -1,0 +1,11 @@
+{
+  "command": "echo hello",
+  "context": {
+    "workspace_root": "/tmp/workspace",
+    "metadata": {
+      "override_network": "allow_all",
+      "bypass_preflight": true
+    }
+  },
+  "caller_id": "parent-workflow-1"
+}

@@ -1,0 +1,7 @@
+{
+  "command": "echo hello",
+  "context": {
+    "workspace_root": "/tmp/workspace",
+    "requested_strategy": "local_restricted"
+  }
+}

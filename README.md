@@ -57,12 +57,69 @@ Command execution is one of the highest-risk parts of coding agents. This projec
 - `docs/execution-rhythm.md` — how to keep long-running agent work disciplined.
 - `docs/integration-contract.md` — how this project will plug back into larger systems.
 - `docs/open-questions.md` — unresolved research and implementation questions.
+- `docs/glossary.md` — canonical terminology.
+- `docs/contracts.md` — v0 type and API contract definitions.
+- `docs/lifecycle-model.md` — run_id, replay, and storage.
+- `docs/reviewer-guide.md` — operator/reviewer inspection flow.
+- `docs/case-study.md` — v0 summary and platform backfeed recommendations.
 
 ## Current Stage
 
-Stage 0 is complete only when the project has clear contracts, explicit
-non-goals, phase boundaries, evaluation intent, and Cursor rules strong enough
-to keep parallel implementation work on track.
+**Phases 0–9 baseline complete for v0.1 slice.**
+
+Dry-run is the default; `local_restricted` subprocess execution is available with
+explicit opt-in. Lifecycle recording/replay, reviewer summaries, and strategy
+comparison experiment are documented and tested. See `docs/case-study.md` and
+`docs/known-limitations.md`.
+
+## Development
+
+```bash
+pip install -e ".[dev]"
+python3 -m pytest -v
+python3 scripts/evaluate.py --check-baseline
+python3 scripts/compare_strategies.py
+```
+
+### Integration adapter (parent workflow)
+
+```python
+from groundseal.adapter import execute_workflow
+from groundseal.review import build_reviewer_summary, format_reviewer_markdown
+
+response = execute_workflow({
+    "command": "echo hello",
+    "context": {"workspace_root": "/tmp/workspace"},
+})
+print(format_reviewer_markdown(build_reviewer_summary(response)))
+```
+
+### Real execution (opt-in)
+
+```bash
+export GROUNDSEAL_ENABLE_LOCAL_RESTRICTED=1
+```
+
+```python
+from groundseal import plan_execution, preflight, run
+from groundseal.contracts.models import ExecutionContext, SandboxStrategy
+
+proposal = plan_execution(
+    "echo hello",
+    ExecutionContext(workspace_root="/tmp/ws", requested_strategy=SandboxStrategy.LOCAL_RESTRICTED),
+)
+run(proposal)  # after preflight pass
+```
+
+### Lifecycle recording
+
+```python
+from groundseal.lifecycle import RunStore, run_and_record, replay_run
+
+store = RunStore()
+record = run_and_record(proposal, preflight_report, store)
+comparison = replay_run(record.run_id, store)
+```
 
 ## Relationship To The Parent Platform
 
