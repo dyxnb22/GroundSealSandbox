@@ -55,6 +55,31 @@ Parent responsibilities:
 - Pass typed `ExecutionContext`; do not embed policy overrides in `metadata`.
 - Surface `failure_class` and `blocking_reasons` to operators.
 
+## Adapter layer (v0)
+
+Parent systems may use the thin adapter instead of calling four functions
+directly:
+
+```python
+from groundseal.adapter import execute_workflow
+
+response = execute_workflow({
+    "command": "echo hello",
+    "context": {"workspace_root": "/tmp/workspace"},
+    "caller_id": "parent-workflow-1",
+})
+```
+
+The adapter:
+- Validates `IntegrationRequest` and returns `schema_invalid` on malformed input
+- Always runs `plan_execution` → `preflight` → `run` (preflight cannot be skipped)
+- Ignores policy override hints in `context.metadata`
+- Returns `IntegrationResponse` with `evidence_summary` for parent UI
+
+Example payloads: `examples/integration_request_valid.json`
+
+Boundary tests: `tests/test_integration_adapter.py`
+
 ## Questions To Resolve Later
 
 - which types must stay platform-neutral

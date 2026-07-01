@@ -62,20 +62,31 @@ Command execution is one of the highest-risk parts of coding agents. This projec
 
 ## Current Stage
 
-**Phase 0 complete. Phases 1–3 baseline complete for dry-run slice.**
+**Phases 0–5 baseline complete for dry-run slice.**
 
-Contracts, glossary, evaluation categories, and integration boundaries are
-defined. Python 3.11+ implementation uses Pydantic v2 models aligned with
-`docs/contracts.md`. The v0 slice implements preflight + dry-run (no real shell
-execution). See `docs/known-limitations.md` for gaps.
+Contracts, glossary, evaluation baseline, and integration adapter are in place.
+Python 3.11+ implementation uses Pydantic v2 models aligned with `docs/contracts.md`.
+The v0 slice implements preflight + dry-run (no real shell execution).
+Parent systems can call `groundseal.adapter.execute_workflow`. See
+`docs/known-limitations.md` for gaps.
 
 ## Development
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
 pip install -e ".[dev]"
-pytest
+python3 -m pytest -v
+python3 scripts/evaluate.py --check-baseline
+```
+
+### Integration adapter (parent workflow)
+
+```python
+from groundseal.adapter import execute_workflow
+
+response = execute_workflow({
+    "command": "echo hello",
+    "context": {"workspace_root": "/tmp/workspace"},
+})
 ```
 
 ## Relationship To The Parent Platform

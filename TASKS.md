@@ -2,21 +2,21 @@
 
 ## Now
 
-- Add CI workflow for pytest on push.
-- Expand fixture coverage for `schema_invalid` category with dedicated JSON fixture.
-- Phase 5: thin integration adapter and boundary tests.
+- Implement `local_restricted` real subprocess execution behind explicit opt-in.
+- Add failure record for schema_invalid boundary case (FR-002).
+- Phase 6 spike: run_id and replay model draft.
 
 ## Next
 
-- Implement `local_restricted` real execution behind explicit opt-in.
-- Evaluation report template under `reports/`.
-- Network policy enforcement at OS level (future).
+- Reviewer-facing evidence summary view (Phase 7).
+- Comparative dry_run vs local_restricted experiment (Phase 8).
+- CI badge in README once main branch runs green.
 
 ## Later
 
-- Comparative experiments (Phase 8) and case study (Phase 9).
-- Persistence and replay (Phase 6).
-- Reviewer-facing output views (Phase 7).
+- OS-level network policy enforcement.
+- Multi-tenant identity at integration boundary.
+- Case study and platform backfeed (Phase 9).
 
 ## Sequencing Rules
 
@@ -47,3 +47,16 @@
 ### Phase 3
 - `FailureClass` enum and negative-path tests.
 - Failure record `docs/failure-records/FR-001-policy-denied.md`.
+
+### Phase 4
+- GitHub Actions CI (`.github/workflows/ci.yml`).
+- All six fixture categories + `integration_boundary_metadata` variant.
+- Evaluation runner (`scripts/evaluate.py`, `groundseal/evaluation/runner.py`).
+- Baseline ratchet (`tests/baselines/evaluation_v0.json`).
+- Report template (`reports/evaluation-report-template.md`).
+
+### Phase 5
+- Integration adapter (`groundseal/adapter/`).
+- `execute_workflow` orchestrates full handshake; preflight cannot be skipped.
+- Boundary tests (`tests/test_integration_adapter.py`).
+- Integration example (`examples/integration_request_valid.json`).

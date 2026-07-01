@@ -1,0 +1,36 @@
+{
+  "happy_path.json": {
+    "category": "dry_run_happy",
+    "expect_ok": true,
+    "via": "adapter"
+  },
+  "schema_invalid.json": {
+    "category": "schema_invalid",
+    "expect_ok": false,
+    "expect_failure_class": "schema_invalid",
+    "via": "adapter"
+  },
+  "policy_denied.json": {
+    "category": "policy_denied",
+    "expect_ok": false,
+    "expect_failure_class": "preflight_failed",
+    "via": "adapter"
+  },
+  "strategy_mismatch.json": {
+    "category": "strategy_mismatch",
+    "expect_ok": true,
+    "via": "adapter"
+  },
+  "ambiguous_high_risk.json": {
+    "category": "ambiguous_high_risk",
+    "expect_ok": false,
+    "expect_failure_class": "ambiguous_high_risk",
+    "via": "adapter"
+  },
+  "integration_boundary_metadata.json": {
+    "category": "integration_boundary",
+    "expect_ok": true,
+    "via": "adapter",
+    "assert_network_deny_all": true
+  }
+}

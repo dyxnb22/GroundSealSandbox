@@ -61,6 +61,15 @@ with failure buckets in [failure-analysis-plan.md](failure-analysis-plan.md).
 | Phase 3 | all six categories |
 | Phase 4 | all six + integration-boundary variants |
 
+### Running evaluation
+
+```bash
+python scripts/evaluate.py --check-baseline
+```
+
+Writes `reports/generated/evaluation-latest.json`. Baseline ratchet:
+`tests/baselines/evaluation_v0.json`. CI runs evaluation on every push.
+
 ### Explainability coverage
 
 A fixture passes explainability checks when its failure or denial path includes

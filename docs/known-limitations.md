@@ -27,4 +27,6 @@ Documented constraints of the Phase 2 dry-run slice.
 
 ## Evaluation
 
-- Six fixture categories are defined; integration-boundary variants are Phase 4.
+- Six fixture categories plus one integration-boundary variant in `tests/fixtures/manifest.json`.
+- Run `python3 scripts/evaluate.py --check-baseline` for ratcheted evaluation.
+- CI runs pytest and evaluation baseline on push/PR.
