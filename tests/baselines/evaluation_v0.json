@@ -1,0 +1,12 @@
+{
+  "contract_pass_rate": 1.0,
+  "negative_path_correctness": 1.0,
+  "fixture_results": {
+    "happy_path.json": "pass",
+    "schema_invalid.json": "pass",
+    "policy_denied.json": "pass",
+    "strategy_mismatch.json": "pass",
+    "ambiguous_high_risk.json": "pass",
+    "integration_boundary_metadata.json": "pass"
+  }
+}

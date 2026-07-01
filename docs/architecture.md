@@ -43,3 +43,8 @@ boundaries, main components, and integration seams.
 Start with the thinnest slice that proves the subsystem contract, then add
 richer storage, adapters, or UI only after baseline correctness and evaluation
 scaffolding exist.
+
+## Terminology
+
+Canonical terms are defined in [glossary.md](glossary.md). Contract field
+definitions live in [contracts.md](contracts.md).
