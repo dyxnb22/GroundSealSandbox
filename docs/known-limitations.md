@@ -1,13 +1,13 @@
-# Known Limitations (v0)
+# Known Limitations (v0.1)
 
-Documented constraints of the Phase 2 dry-run slice.
+Documented constraints after Phases 6–8.
 
 ## Execution
 
-- **No real subprocess invocation.** `run()` with `dry_run` returns
-  `status=simulated` only.
-- **`local_restricted` is declared but not executable.** Requests downgrade to
-  `dry_run` with explicit rationale.
+- **`local_restricted` is opt-in.** Set `GROUNDSEAL_ENABLE_LOCAL_RESTRICTED=1` or
+  `set_local_restricted_enabled(True)` in tests.
+- **Subprocess uses `shell=True`** with `cwd` set to `workspace_root` only.
+- **`dry_run` remains the default** when real execution is not enabled.
 
 ## Policy
 
@@ -17,16 +17,14 @@ Documented constraints of the Phase 2 dry-run slice.
 ## Network and filesystem
 
 - No OS-level network isolation or mount namespaces.
-- Filesystem constraints are validated logically; paths are not enforced at the
-  kernel level.
+- Filesystem constraints are logical; kernel-level enforcement is future work.
 
-## Capability matrix
+## Lifecycle
 
-- Only `dry_run` is in `AVAILABLE_STRATEGIES_V0`.
-- Strategy matrix row for `local_restricted` exists for forward compatibility.
+- `RunStore` JSON persistence is single-file, no migration.
+- Replay may detect drift if opt-in config changes between runs.
 
 ## Evaluation
 
-- Six fixture categories plus one integration-boundary variant in `tests/fixtures/manifest.json`.
-- Run `python3 scripts/evaluate.py --check-baseline` for ratcheted evaluation.
-- CI runs pytest and evaluation baseline on push/PR.
+- Six fixture categories plus integration-boundary variant in manifest.
+- Strategy comparison experiment is offline only (`scripts/compare_strategies.py`).

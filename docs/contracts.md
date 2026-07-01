@@ -90,6 +90,9 @@ Enum values for v0:
 | `preflight_summary` | string | no | Aggregated preflight outcome |
 | `simulated_command` | string | no | Present for `dry_run` / `simulated` status |
 | `checks_performed` | string[] | no | Names of checks that ran |
+| `stdout` | string | no | Captured stdout (local_restricted) |
+| `stderr` | string | no | Captured stderr (local_restricted) |
+| `run_id` | string | no | Lifecycle run identifier when recorded |
 
 ### ExecutionResult
 

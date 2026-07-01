@@ -12,7 +12,7 @@ from groundseal.contracts.models import (
 )
 from groundseal.policy.normalize import command_matches_denylist
 from groundseal.policy.strategy_matrix import (
-    AVAILABLE_STRATEGIES_V0,
+    get_available_strategies,
     strategy_requires_network,
 )
 
@@ -41,15 +41,16 @@ def _check_policy_denied(proposal: ExecutionProposal) -> PreflightCheck:
 
 def _check_strategy_mismatch(proposal: ExecutionProposal) -> PreflightCheck:
     requested = proposal.request.context.requested_strategy
+    available = get_available_strategies()
     if requested == SandboxStrategy.LOCAL_RESTRICTED:
-        if SandboxStrategy.LOCAL_RESTRICTED not in AVAILABLE_STRATEGIES_V0:
+        if SandboxStrategy.LOCAL_RESTRICTED not in available:
             if proposal.selected_strategy != SandboxStrategy.DRY_RUN:
                 return PreflightCheck(
                     name="strategy_mismatch",
                     status=PreflightStatus.FAIL,
                     reason="local_restricted unavailable and not downgraded to dry_run",
                 )
-    if proposal.selected_strategy not in AVAILABLE_STRATEGIES_V0:
+    if proposal.selected_strategy not in available:
         return PreflightCheck(
             name="strategy_mismatch",
             status=PreflightStatus.FAIL,

@@ -29,3 +29,6 @@ jobs:
 
       - name: Run evaluation baseline
         run: python scripts/evaluate.py --check-baseline
+
+      - name: Run strategy comparison experiment
+        run: python scripts/compare_strategies.py

@@ -14,8 +14,9 @@ from groundseal.contracts.models import (
 )
 from groundseal.evidence.builder import build_simulated_evidence
 from groundseal.execution.dry_run import run_dry
+from groundseal.execution.local_restricted import run_local_restricted
 from groundseal.policy.normalize import NormalizationError, normalize_workspace_root
-from groundseal.policy.strategy_matrix import AVAILABLE_STRATEGIES_V0, select_strategy
+from groundseal.policy.strategy_matrix import get_available_strategies, select_strategy
 from groundseal.preflight.checks import run_preflight
 
 SUPPORTED_CHECKS = [
@@ -32,10 +33,17 @@ LIMITS_V0 = {
 
 
 def describe_capabilities() -> CapabilityProfile:
+    available = get_available_strategies()
+    declared = list(available)
+    if SandboxStrategy.LOCAL_RESTRICTED not in available:
+        declared.append(SandboxStrategy.LOCAL_RESTRICTED)
     return CapabilityProfile(
-        strategies=list(AVAILABLE_STRATEGIES_V0) + [SandboxStrategy.LOCAL_RESTRICTED],
+        strategies=declared,
         supported_checks=SUPPORTED_CHECKS,
-        limits=LIMITS_V0,
+        limits={
+            **LIMITS_V0,
+            "local_restricted_enabled": SandboxStrategy.LOCAL_RESTRICTED in available,
+        },
     )
 
 
@@ -54,11 +62,16 @@ def preflight(proposal: ExecutionProposal) -> PreflightReport:
     return run_preflight(proposal)
 
 
-def run(proposal: ExecutionProposal) -> ExecutionResult:
-    if proposal.selected_strategy not in AVAILABLE_STRATEGIES_V0:
+def run(proposal: ExecutionProposal, *, run_id: str | None = None) -> ExecutionResult:
+    available = get_available_strategies()
+    if proposal.selected_strategy not in available:
         return ExecutionResult(
             status=ExecutionStatus.DENIED,
             evidence=build_simulated_evidence(proposal),
             failure_class=FailureClass.STRATEGY_MISMATCH,
         )
+
+    if proposal.selected_strategy == SandboxStrategy.LOCAL_RESTRICTED:
+        return run_local_restricted(proposal, run_id=run_id)
+
     return run_dry(proposal)

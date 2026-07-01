@@ -43,6 +43,6 @@ with rationale recorded.
 
 ## I8: Strategy availability
 
-`local_restricted` is declared in the capability profile but **not executable**
-in v0. Requests for it fail with `strategy_mismatch` unless overridden to
-`dry_run` with explicit rationale during planning.
+`local_restricted` requires explicit opt-in via `GROUNDSEAL_ENABLE_LOCAL_RESTRICTED`
+or `set_local_restricted_enabled(True)`. Without opt-in, requests downgrade to
+`dry_run` with documented rationale.

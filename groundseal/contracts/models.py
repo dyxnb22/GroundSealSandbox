@@ -109,6 +109,9 @@ class ExecutionEvidence(BaseModel):
     preflight_summary: str | None = None
     simulated_command: str | None = None
     checks_performed: list[str] = Field(default_factory=list)
+    stdout: str | None = None
+    stderr: str | None = None
+    run_id: str | None = None
 
 
 class ExecutionResult(BaseModel):
@@ -129,3 +132,44 @@ class CapabilityProfile(BaseModel):
     strategies: list[SandboxStrategy]
     supported_checks: list[str]
     limits: dict[str, Any] = Field(default_factory=dict)
+
+
+class RunRecord(BaseModel):
+    """Durable snapshot of one execution lifecycle."""
+
+    run_id: str
+    created_at: str
+    proposal: ExecutionProposal
+    preflight: PreflightReport
+    result: ExecutionResult
+
+
+class ReplayComparison(BaseModel):
+    """Outcome of replaying a stored run."""
+
+    run_id: str
+    original_status: str
+    replay_status: str
+    original_exit_code: int | None
+    replay_exit_code: int | None
+    status_match: bool
+    exit_code_match: bool
+    drift_detected: bool
+    notes: str = ""
+
+
+class ReviewerSummary(BaseModel):
+    """Human-review-oriented view of an execution outcome."""
+
+    headline: str
+    decision: str
+    command_preview: str
+    strategy: str
+    strategy_rationale: str
+    preflight_status: str
+    execution_status: str
+    failure_class: str | None = None
+    blocking_reasons: list[str] = Field(default_factory=list)
+    stdout_preview: str = ""
+    stderr_preview: str = ""
+    run_id: str | None = None

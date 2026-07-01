@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from groundseal.config import is_local_restricted_enabled
 from groundseal.contracts.models import (
     ExecutionContext,
     ExecutionProposal,
@@ -13,8 +14,6 @@ from groundseal.contracts.models import (
     NetworkPolicyProfile,
     SandboxStrategy,
 )
-
-AVAILABLE_STRATEGIES_V0: frozenset[SandboxStrategy] = frozenset({SandboxStrategy.DRY_RUN})
 
 
 @dataclass(frozen=True)
@@ -36,9 +35,20 @@ STRATEGY_MATRIX: dict[SandboxStrategy, StrategySpec] = {
         strategy=SandboxStrategy.LOCAL_RESTRICTED,
         real_execution=True,
         requires_network=False,
-        description="Execute in workspace with deny-by-default network (not available in v0)",
+        description="Execute in workspace with deny-by-default network",
     ),
 }
+
+
+def get_available_strategies() -> frozenset[SandboxStrategy]:
+    strategies: set[SandboxStrategy] = {SandboxStrategy.DRY_RUN}
+    if is_local_restricted_enabled():
+        strategies.add(SandboxStrategy.LOCAL_RESTRICTED)
+    return frozenset(strategies)
+
+
+# Backward-compatible alias for imports
+AVAILABLE_STRATEGIES_V0 = get_available_strategies()
 
 
 def strategy_requires_network(strategy: SandboxStrategy) -> bool:
@@ -53,17 +63,18 @@ def select_strategy(
     """Choose strategy and assemble a proposal from a normalized request."""
     ctx: ExecutionContext = request.context
     requested = ctx.requested_strategy
+    available = get_available_strategies()
 
     if requested == SandboxStrategy.LOCAL_RESTRICTED:
-        if SandboxStrategy.LOCAL_RESTRICTED not in AVAILABLE_STRATEGIES_V0:
-            selected = SandboxStrategy.DRY_RUN
-            rationale = (
-                "Requested local_restricted is not available in v0; "
-                "downgraded to dry_run with explicit rationale"
-            )
-        else:
+        if SandboxStrategy.LOCAL_RESTRICTED in available:
             selected = SandboxStrategy.LOCAL_RESTRICTED
             rationale = "Caller requested local_restricted and it is available"
+        else:
+            selected = SandboxStrategy.DRY_RUN
+            rationale = (
+                "Requested local_restricted is not enabled; "
+                "downgraded to dry_run with explicit rationale"
+            )
     elif requested == SandboxStrategy.DRY_RUN:
         selected = SandboxStrategy.DRY_RUN
         rationale = "Caller requested dry_run"
@@ -72,7 +83,7 @@ def select_strategy(
         rationale = "No strategy requested; defaulting to dry_run"
     else:
         selected = SandboxStrategy.DRY_RUN
-        rationale = f"Unknown strategy preference; defaulting to dry_run"
+        rationale = "Unknown strategy preference; defaulting to dry_run"
 
     fs = FilesystemConstraints(workspace_root=normalize_root)
     network = NetworkPolicyProfile(mode=NetworkMode.DENY_ALL)

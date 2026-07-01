@@ -2,21 +2,21 @@
 
 ## Now
 
-- Implement `local_restricted` real subprocess execution behind explicit opt-in.
-- Add failure record for schema_invalid boundary case (FR-002).
-- Phase 6 spike: run_id and replay model draft.
+- OS-level network policy enforcement spike.
+- Multi-tenant identity at integration boundary (Phase 5 open question).
+- CI badge in README once main branch runs green.
 
 ## Next
 
-- Reviewer-facing evidence summary view (Phase 7).
-- Comparative dry_run vs local_restricted experiment (Phase 8).
-- CI badge in README once main branch runs green.
+- Record migration for RunStore schema changes.
+- Expand denylist with configurable policy profiles.
+- Integration adapter optional `persist_run` flag.
 
 ## Later
 
-- OS-level network policy enforcement.
-- Multi-tenant identity at integration boundary.
-- Case study and platform backfeed (Phase 9).
+- Performance benchmarks and timeout tuning for subprocess.
+- Richer reviewer HTML views.
+- Platform backfeed PR into parent monorepo.
 
 ## Sequencing Rules
 
@@ -26,37 +26,29 @@
 
 ## Completed
 
-### Phase 0
-- Glossary and minimal contract set (`docs/glossary.md`, `docs/contracts.md`).
-- Evaluation fixture categories (`docs/evaluation-plan.md`).
-- Parent-platform assumption separation (`docs/integration-contract.md`).
-- Python project scaffold (`pyproject.toml`, `groundseal/` package layout).
+### Phase 0–5
+See git history / prior TASKS sections.
 
-### Phase 1
-- Pydantic models (`groundseal/contracts/models.py`).
-- Invariants (`docs/invariants.md`).
-- Strategy matrix (`groundseal/policy/strategy_matrix.py`).
-- Contract and strategy unit tests.
+### Phase 6 — Durable / multi-run
+- `RunRecord`, `ReplayComparison` models
+- `RunStore` with optional JSON persistence
+- `run_and_record`, `replay_run` with drift detection
+- `docs/lifecycle-model.md`
 
-### Phase 2
-- Public API: `describe_capabilities`, `plan_execution`, `preflight`, `run`.
-- Dry-run execution path.
-- E2E fixture `tests/fixtures/happy_path.json`.
-- Known limitations doc.
+### Phase 7 — Reviewer experience
+- `ReviewerSummary` + `format_reviewer_markdown`
+- `docs/reviewer-guide.md`
+- `tests/test_reviewer.py`
 
-### Phase 3
-- `FailureClass` enum and negative-path tests.
-- Failure record `docs/failure-records/FR-001-policy-denied.md`.
+### Phase 8 — Comparative experiments
+- `scripts/compare_strategies.py`
+- `docs/experiments/dry-run-vs-local-restricted.md`
+- `tests/test_strategy_comparison.py`
 
-### Phase 4
-- GitHub Actions CI (`.github/workflows/ci.yml`).
-- All six fixture categories + `integration_boundary_metadata` variant.
-- Evaluation runner (`scripts/evaluate.py`, `groundseal/evaluation/runner.py`).
-- Baseline ratchet (`tests/baselines/evaluation_v0.json`).
-- Report template (`reports/evaluation-report-template.md`).
+### Phase 9 — Case study
+- `docs/case-study.md`
 
-### Phase 5
-- Integration adapter (`groundseal/adapter/`).
-- `execute_workflow` orchestrates full handshake; preflight cannot be skipped.
-- Boundary tests (`tests/test_integration_adapter.py`).
-- Integration example (`examples/integration_request_valid.json`).
+### local_restricted execution
+- Opt-in via `GROUNDSEAL_ENABLE_LOCAL_RESTRICTED` / `set_local_restricted_enabled`
+- `groundseal/execution/local_restricted.py`
+- `tests/test_local_restricted.py`
