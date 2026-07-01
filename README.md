@@ -1,5 +1,7 @@
 # GroundSealSandbox
 
+![CI](https://github.com/dyxnb22/GroundSealSandbox/actions/workflows/ci.yml/badge.svg)
+
 A controlled command-execution boundary for agent-driven development workflows
 
 ## Overview
@@ -61,16 +63,21 @@ Command execution is one of the highest-risk parts of coding agents. This projec
 - `docs/contracts.md` — v0 type and API contract definitions.
 - `docs/lifecycle-model.md` — run_id, replay, and storage.
 - `docs/reviewer-guide.md` — operator/reviewer inspection flow.
-- `docs/case-study.md` — v0 summary and platform backfeed recommendations.
+- `docs/case-study.md` — v0/v0.2 summary and platform backfeed recommendations.
+- `docs/os-enforcement-strategy.md` — trust tiers and enforcement backend matrix.
 
 ## Current Stage
 
-**Phases 0–9 baseline complete for v0.1 slice.**
+**Milestone complete: Phases 0–9 (v0.1) + v0.2 follow-up slices.**
 
-Dry-run is the default; `local_restricted` subprocess execution is available with
-explicit opt-in. Lifecycle recording/replay, reviewer summaries, and strategy
-comparison experiment are documented and tested. See `docs/case-study.md` and
-`docs/known-limitations.md`.
+| Version | Scope |
+|---------|--------|
+| v0.1 | Dry-run core, evaluation baseline, integration adapter, lifecycle, reviewer UX, experiments |
+| v0.2 | Configurable `PolicyProfile`, OS enforcement metadata, RunStore migration, tenant-scoped persistence |
+
+Dry-run remains the default; `local_restricted` subprocess execution requires explicit
+opt-in. See `docs/case-study.md` and `docs/known-limitations.md` for residual risks
+and deferred work (Landlock, argv-based subprocess, platform backfeed).
 
 ## Development
 

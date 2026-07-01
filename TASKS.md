@@ -2,12 +2,11 @@
 
 ## Now
 
-- Landlock wiring into `local_restricted` (after network spike evaluation).
-- CI badge in README once main branch runs green.
-- Platform backfeed PR into parent monorepo.
+- Platform backfeed PR into parent monorepo (when parent repo is ready).
 
 ## Next
 
+- Landlock wiring into `local_restricted` (after network spike evaluation).
 - Performance benchmarks and timeout tuning for subprocess.
 - Richer reviewer HTML views.
 - argv-based subprocess (replace `shell=True`).
