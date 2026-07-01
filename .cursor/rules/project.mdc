@@ -1,0 +1,12 @@
+---
+description: Project boundary rules for GroundSealSandbox
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+- This repository exists to build GroundSealSandbox, not a general-purpose agent platform.
+- Keep work aligned to the subsystem focus: sandbox strategy selection, filesystem and network constraints, preflight checks, execution logging, and deterministic failure handling.
+- Before implementation, map each task to a roadmap phase.
+- Do not add neighboring subsystems unless the integration contract explicitly requires it.
+- Favor clarity, contracts, and evaluability over scope growth.
