@@ -2,30 +2,48 @@
 
 ## Now
 
-- Tighten the subsystem glossary and boundary language across all docs.
-- Define the minimal contract set required before implementation begins.
-- Write initial evaluation case categories and failure buckets.
-- Identify which assumptions come from the parent platform and which belong here.
-- Specify a minimal local development shape that does not overcommit future architecture.
+- Add CI workflow for pytest on push.
+- Expand fixture coverage for `schema_invalid` category with dedicated JSON fixture.
+- Phase 5: thin integration adapter and boundary tests.
 
 ## Next
 
-- Turn core concepts into typed schemas and protocol drafts.
-- Define the first deterministic test and evaluation fixtures.
-- Draft a minimal implementation slice for the first roadmap phase.
-- Document expected failure modes and observable signals.
-- Define the first integration handshake back to a parent workflow.
+- Implement `local_restricted` real execution behind explicit opt-in.
+- Evaluation report template under `reports/`.
+- Network policy enforcement at OS level (future).
 
 ## Later
 
-- Implement the minimal viable runtime slice for this subsystem.
-- Expand evaluation depth and regression ratchets.
-- Test integration boundaries under failure conditions.
-- Compare at least two architectural approaches where tradeoffs are real.
-- Produce a concise case-study style summary once the subsystem is credible.
+- Comparative experiments (Phase 8) and case study (Phase 9).
+- Persistence and replay (Phase 6).
+- Reviewer-facing output views (Phase 7).
 
 ## Sequencing Rules
 
 - Prefer docs -> contracts -> tests -> implementation.
 - Avoid broad implementation until phase exit criteria are explicit.
 - Keep tasks small enough for one focused agent round to complete well.
+
+## Completed
+
+### Phase 0
+- Glossary and minimal contract set (`docs/glossary.md`, `docs/contracts.md`).
+- Evaluation fixture categories (`docs/evaluation-plan.md`).
+- Parent-platform assumption separation (`docs/integration-contract.md`).
+- Python project scaffold (`pyproject.toml`, `groundseal/` package layout).
+
+### Phase 1
+- Pydantic models (`groundseal/contracts/models.py`).
+- Invariants (`docs/invariants.md`).
+- Strategy matrix (`groundseal/policy/strategy_matrix.py`).
+- Contract and strategy unit tests.
+
+### Phase 2
+- Public API: `describe_capabilities`, `plan_execution`, `preflight`, `run`.
+- Dry-run execution path.
+- E2E fixture `tests/fixtures/happy_path.json`.
+- Known limitations doc.
+
+### Phase 3
+- `FailureClass` enum and negative-path tests.
+- Failure record `docs/failure-records/FR-001-policy-denied.md`.

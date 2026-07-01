@@ -57,12 +57,26 @@ Command execution is one of the highest-risk parts of coding agents. This projec
 - `docs/execution-rhythm.md` — how to keep long-running agent work disciplined.
 - `docs/integration-contract.md` — how this project will plug back into larger systems.
 - `docs/open-questions.md` — unresolved research and implementation questions.
+- `docs/glossary.md` — canonical terminology.
+- `docs/contracts.md` — v0 type and API contract definitions.
 
 ## Current Stage
 
-Stage 0 is complete only when the project has clear contracts, explicit
-non-goals, phase boundaries, evaluation intent, and Cursor rules strong enough
-to keep parallel implementation work on track.
+**Phase 0 complete. Phases 1–3 baseline complete for dry-run slice.**
+
+Contracts, glossary, evaluation categories, and integration boundaries are
+defined. Python 3.11+ implementation uses Pydantic v2 models aligned with
+`docs/contracts.md`. The v0 slice implements preflight + dry-run (no real shell
+execution). See `docs/known-limitations.md` for gaps.
+
+## Development
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+pytest
+```
 
 ## Relationship To The Parent Platform
 

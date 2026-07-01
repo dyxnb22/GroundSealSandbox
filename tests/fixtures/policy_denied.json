@@ -1,0 +1,6 @@
+{
+  "command": "rm -rf /",
+  "context": {
+    "workspace_root": "/tmp/workspace"
+  }
+}

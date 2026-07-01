@@ -1,0 +1,6 @@
+{
+  "command": "echo hello",
+  "context": {
+    "workspace_root": "/tmp/workspace"
+  }
+}
